@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- System Status Summary Section -->
+    <div class="summary-section" id="dashboard-summary">
+        <div class="status-indicator status-normal">
+            <span>Loading system data...</span>
+        </div>
+        <div class="metrics-summary">
+            <div class="metric-item">
+                <span class="metric-label">CPU:</span>
+                <span class="metric-value">--</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">GPU:</span>
+                <span class="metric-value">--</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Memory:</span>
+                <span class="metric-value">--</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Network In:</span>
+                <span class="metric-value">--</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Network Out:</span>
+                <span class="metric-value">--</span>
+            </div>
+            <div class="metric-item">
+                <span class="metric-label">Last Updated:</span>
+                <span class="metric-value">--</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Real-time Charts Section -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <h3>CPU Usage</h3>
+            <div id="cpu-chart" class="chart-container"></div>
+        </div>
+        <div class="metric-card">
+            <h3>GPU Usage</h3>
+            <div id="gpu-chart" class="chart-container"></div>
+        </div>
+        <div class="metric-card">
+            <h3>Memory Usage</h3>
+            <div id="memory-chart" class="chart-container"></div>
+        </div>
+        <div class="metric-card">
+            <h3>Network Activity</h3>
+            <div id="network-chart" class="chart-container"></div>
+        </div>
+    </div>
+
+    <!-- Anomaly Detection Section -->
+    <div class="anomaly-section">
+        <h2>Anomaly Detection</h2>
+        <div id="anomaly-chart" class="chart-container"></div>
+        <div class="anomaly-info">
+            <p>This chart shows detected anomalies in system metrics. A value of 1 indicates an anomaly has been detected.</p>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript is now loaded from the frontend.js file -->
+{% endblock %}

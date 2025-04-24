@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-content">
+        <h1>Real-Time System Monitoring</h1>
+        <h2>Powered by Machine Learning</h2>
+        <p class="hero-description">Advanced analytics and visualization for High-Performance Computing Systems</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">View Dashboard</a>
+            <a href="{{ url_for('main.upload') }}" class="btn btn-secondary">Upload Data</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <div class="metrics-preview">
+            <div class="preview-chart">
+                <div class="chart-placeholder pulse"></div>
+                <div class="chart-label">CPU Usage</div>
+            </div>
+            <div class="preview-chart">
+                <div class="chart-placeholder pulse"></div>
+                <div class="chart-label">Memory Usage</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="section features-section">
+    <h2 class="section-title">Key Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-chart">📊</i>
+            </div>
+            <h3>Real-time Monitoring</h3>
+            <p>Track CPU, GPU, memory usage, and network activity with live updates every 5 seconds.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-brain">🧠</i>
+            </div>
+            <h3>ML Analytics</h3>
+            <p>Detect anomalies, forecast trends, and gain insights using advanced machine learning algorithms.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-graph">📈</i>
+            </div>
+            <h3>Interactive Visualization</h3>
+            <p>Explore system performance through interactive charts and customizable dashboards.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="icon-alert">🔔</i>
+            </div>
+            <h3>Anomaly Detection</h3>
+            <p>Automatically identify unusual patterns and potential issues in your system's performance.</p>
+        </div>
+    </div>
+</div>
+
+<!-- How It Works Section -->
+<div class="section how-it-works-section">
+    <h2 class="section-title">How It Works</h2>
+    <div class="steps-container">
+        <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+                <h3>Collect Data</h3>
+                <p>The system continuously collects performance metrics from your computing environment.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+                <h3>Analyze</h3>
+                <p>Machine learning algorithms process the data to identify patterns, anomalies, and trends.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+                <h3>Visualize</h3>
+                <p>Results are presented through intuitive dashboards and interactive charts.</p>
+            </div>
+        </div>
+        <div class="step">
+            <div class="step-number">4</div>
+            <div class="step-content">
+                <h3>Take Action</h3>
+                <p>Use insights to optimize performance and address potential issues before they become critical.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CTA Section -->
+<div class="section cta-section">
+    <div class="cta-content">
+        <h2>Ready to monitor your system?</h2>
+        <p>Start tracking performance metrics and gain valuable insights now.</p>
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-primary">Go to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

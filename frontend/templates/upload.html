@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="upload-container">
+    <div class="upload-card">
+        <div class="upload-header">
+            <h1>Upload Log Data</h1>
+            <p class="upload-description">Upload your system log files for analysis and visualization</p>
+        </div>
+        
+        <div class="upload-content">
+            <div class="upload-form-container">
+                <form action="/upload" method="post" enctype="multipart/form-data" class="upload-form" id="uploadForm">
+                    <div class="file-upload-area" id="dropZone">
+                        <div class="upload-icon">
+                            <i class="icon-upload">📤</i>
+                        </div>
+                        <p class="drag-text">Drag and drop files here</p>
+                        <p class="or-text">- OR -</p>
+                        <label for="fileInput" class="file-input-label btn btn-primary">Browse Files</label>
+                        <input type="file" name="file" id="fileInput" class="file-input" accept=".csv,.log,.txt">
+                        <p class="selected-file-name" id="selectedFileName">No file selected</p>
+                    </div>
+                    
+                    <div class="upload-options">
+                        <div class="form-group">
+                            <label for="dataType">Data Type</label>
+                            <select name="dataType" id="dataType" class="form-control">
+                                <option value="system_logs">System Logs</option>
+                                <option value="performance_metrics">Performance Metrics</option>
+                                <option value="custom_data">Custom Data</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="analysisType">Analysis Type</label>
+                            <select name="analysisType" id="analysisType" class="form-control">
+                                <option value="all">Complete Analysis</option>
+                                <option value="anomaly">Anomaly Detection Only</option>
+                                <option value="forecast">Forecasting Only</option>
+                                <option value="clustering">Clustering Only</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="upload-actions">
+                        <button type="submit" class="btn btn-primary btn-upload">Upload and Analyze</button>
+                        <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="upload-info">
+                <div class="info-card">
+                    <h3>Supported File Types</h3>
+                    <ul class="file-types-list">
+                        <li><span class="file-type csv">.CSV</span> - Comma-separated values</li>
+                        <li><span class="file-type log">.LOG</span> - System log files</li>
+                        <li><span class="file-type txt">.TXT</span> - Plain text files</li>
+                    </ul>
+                </div>
+                
+                <div class="info-card">
+                    <h3>Data Format Guidelines</h3>
+                    <p>For best results, ensure your data includes:</p>
+                    <ul>
+                        <li>Timestamp column in a standard format</li>
+                        <li>Numeric metrics columns (CPU, Memory, etc.)</li>
+                        <li>Consistent column headers</li>
+                        <li>No missing values or proper handling of them</li>
+                    </ul>
+                    <p><a href="#" class="info-link">View sample data format</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // JavaScript to enhance the file upload experience
+    document.addEventListener('DOMContentLoaded', function() {
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const selectedFileName = document.getElementById('selectedFileName');
+        
+        // Handle file selection via the browse button
+        fileInput.addEventListener('change', function() {
+            if (fileInput.files.length > 0) {
+                selectedFileName.textContent = fileInput.files[0].name;
+                dropZone.classList.add('has-file');
+            } else {
+                selectedFileName.textContent = 'No file selected';
+                dropZone.classList.remove('has-file');
+            }
+        });
+        
+        // Handle drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropZone.classList.add('highlight');
+        }
+        
+        function unhighlight() {
+            dropZone.classList.remove('highlight');
+        }
+        
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0) {
+                fileInput.files = files;
+                selectedFileName.textContent = files[0].name;
+                dropZone.classList.add('has-file');
+            }
+        }
+    });
+</script>
+{% endblock %}
