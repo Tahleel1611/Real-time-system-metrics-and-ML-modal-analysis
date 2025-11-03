@@ -149,14 +149,18 @@ def get_system_logs() -> List[str]:
         system = platform.system()
         
         if system == "Linux":
-            # Use safer subprocess call without shell=True
+            # Use safer subprocess call without shell
             result = subprocess.run(
-                ["sh", "-c", "dmesg | tail -n 10"],
+                ["dmesg"],
                 capture_output=True,
                 text=True,
                 timeout=5
             )
-            logs = result.stdout.splitlines() if result.returncode == 0 else [result.stderr]
+            if result.returncode == 0:
+                # Process output to get last 10 lines using Python
+                logs = result.stdout.splitlines()[-10:]
+            else:
+                logs = [result.stderr]
         elif system == "Windows":
             # Use safer subprocess call without shell=True
             result = subprocess.run(

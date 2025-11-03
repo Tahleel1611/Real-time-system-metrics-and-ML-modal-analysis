@@ -248,8 +248,10 @@ if __name__ == "__main__":
     })
     
     # Ensure non-negative values
+    percentage_metrics = ['cpu', 'gpu', 'memory_usage']
     for col in ['cpu', 'gpu', 'memory_usage', 'data_in', 'data_out']:
-        sample_data[col] = sample_data[col].clip(lower=0, upper=100 if col in ['cpu', 'gpu', 'memory_usage'] else None)
+        upper_limit = 100 if col in percentage_metrics else None
+        sample_data[col] = sample_data[col].clip(lower=0, upper=upper_limit)
     
     sample_data.set_index('timestamp', inplace=True)
     

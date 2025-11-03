@@ -199,8 +199,9 @@ def plot_results(df: pd.DataFrame, column: str, trend: pd.Series, seasonal: pd.S
         plt.savefig(save_path, dpi=100, bbox_inches='tight')
         plt.close()
     else:
+        # Non-blocking display without pause to avoid accumulating delays
         plt.show(block=False)
-        plt.pause(0.1)
+
 
 def cluster_analysis(df: pd.DataFrame, n_clusters: int = 3, save_path: str = None) -> np.ndarray:
     """
@@ -241,8 +242,8 @@ def cluster_analysis(df: pd.DataFrame, n_clusters: int = 3, save_path: str = Non
         plt.savefig(save_path, dpi=100, bbox_inches='tight')
         plt.close()
     else:
+        # Non-blocking display without pause
         plt.show(block=False)
-        plt.pause(0.1)
 
     return clusters
 

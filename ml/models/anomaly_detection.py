@@ -37,6 +37,12 @@ class AnomalyDetector:
         if not 0 < contamination < 0.5:
             raise ValueError("Contamination must be between 0 and 0.5")
         
+        if not isinstance(n_components, int) or n_components <= 0:
+            raise ValueError("n_components must be a positive integer")
+        
+        if n_components > 50:
+            raise ValueError("n_components should not exceed 50 for typical use cases")
+        
         self.contamination = contamination
         self.n_components = n_components
         self.scaler = StandardScaler()

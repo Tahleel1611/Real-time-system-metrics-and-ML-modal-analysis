@@ -318,8 +318,16 @@ if __name__ == "__main__":
     
     try:
         print(f"Starting advanced analysis of {csv_file}")
-        df, results, corr_matrix, anomaly_classifier, cluster_stats, classification_rep, optimal_clusters = analyze_logs(csv_file)
-        interpret_results(df, results, corr_matrix, anomaly_classifier, cluster_stats, classification_rep, optimal_clusters)
+        # Unpack analysis results
+        analysis_output = analyze_logs(csv_file)
+        (df, results, corr_matrix, anomaly_classifier, 
+         cluster_stats, classification_rep, optimal_clusters) = analysis_output
+        
+        # Interpret results
+        interpret_results(
+            df, results, corr_matrix, anomaly_classifier,
+            cluster_stats, classification_rep, optimal_clusters
+        )
         
     except FileNotFoundError:
         print(f"Error: File '{csv_file}' not found.")

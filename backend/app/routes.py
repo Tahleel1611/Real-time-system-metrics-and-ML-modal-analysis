@@ -4,7 +4,10 @@ import datetime
 import random
 import pandas as pd
 import os
-import time
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 main = Blueprint('main', __name__)
 
@@ -109,7 +112,7 @@ def save_metrics_to_csv(metrics):
         
     except (OSError, IOError) as e:
         # Log the error but don't fail the entire request
-        print(f"Warning: Failed to save metrics to CSV: {e}")
+        logger.warning(f"Failed to save metrics to CSV: {e}")
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload():
