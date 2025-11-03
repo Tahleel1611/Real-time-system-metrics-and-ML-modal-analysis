@@ -4,7 +4,10 @@ import datetime
 import random
 import pandas as pd
 import os
-import time
+import logging
+
+# Configure logging
+logger = logging.getLogger(__name__)
 
 main = Blueprint('main', __name__)
 
@@ -66,43 +69,50 @@ def get_metrics():
 
 def save_metrics_to_csv(metrics):
     """
-    Save system metrics to a CSV file for ML analysis
+    Save system metrics to a CSV file for ML analysis.
+    
+    Implements throttling to avoid excessive writes (max once per minute).
+    Uses efficient file operations to minimize I/O overhead.
+    
+    Args:
+        metrics: Dictionary containing system metrics
     """
-    # Create a data directory if it doesn't exist
-    os.makedirs('data/raw', exist_ok=True)
-    
-    # Create a DataFrame with the current metrics
-    timestamp = datetime.datetime.now()
-    data = {
-        'Timestamp': timestamp,
-        'CPU': metrics['cpu']['percent'],
-        'Memory_Usage': metrics['memory']['percent'],
-        'GPU': random.randint(20, 80),  # Simulated GPU data
-        'HBM_Usage': random.randint(30, 90),  # Simulated HBM memory usage
-        'Data_In': metrics['network']['bytes_recv'] // 1024,  # KB
-        'Data_Out': metrics['network']['bytes_sent'] // 1024,  # KB
-    }
-    
-    # Create a DataFrame
-    df = pd.DataFrame([data])
-    
-    # Define the file path
-    file_path = 'data/raw/live_log_dataset.csv'
-    
-    # Check if file exists to determine if we need to write headers
-    file_exists = os.path.isfile(file_path)
-    
-    # Append to the CSV file
-    if file_exists:
-        # Read existing file to check if it's been more than 10 minutes since the last update
-        existing_df = pd.read_csv(file_path)
-        if len(existing_df) > 0:
-            last_timestamp = pd.to_datetime(existing_df['Timestamp'].iloc[-1])
-            if (timestamp - last_timestamp).total_seconds() < 60:  # Only append every minute
+    try:
+        # Create a data directory if it doesn't exist
+        os.makedirs('data/raw', exist_ok=True)
+        
+        # Define the file path
+        file_path = 'data/raw/live_log_dataset.csv'
+        timestamp = datetime.datetime.now()
+        
+        # Check if we should write (throttle to once per minute)
+        file_exists = os.path.isfile(file_path)
+        if file_exists:
+            # Get file modification time instead of reading entire file
+            file_mtime = datetime.datetime.fromtimestamp(os.path.getmtime(file_path))
+            if (timestamp - file_mtime).total_seconds() < 60:
                 return
-    
-    # Write to CSV
-    df.to_csv(file_path, mode='a', header=not file_exists, index=False)
+        
+        # Create a DataFrame with the current metrics
+        data = {
+            'Timestamp': timestamp,
+            'CPU': metrics['cpu']['percent'],
+            'Memory_Usage': metrics['memory']['percent'],
+            'GPU': random.randint(20, 80),  # Simulated GPU data
+            'HBM_Usage': random.randint(30, 90),  # Simulated HBM memory usage
+            'Data_In': metrics['network']['bytes_recv'] // 1024,  # KB
+            'Data_Out': metrics['network']['bytes_sent'] // 1024,  # KB
+        }
+        
+        # Create a DataFrame
+        df = pd.DataFrame([data])
+        
+        # Write to CSV with proper error handling
+        df.to_csv(file_path, mode='a', header=not file_exists, index=False)
+        
+    except (OSError, IOError) as e:
+        # Log the error but don't fail the entire request
+        logger.warning(f"Failed to save metrics to CSV: {e}")
 
 @main.route('/upload', methods=['GET', 'POST'])
 def upload():
