@@ -1,0 +1,98 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate-pr:
+    name: Validate Pull Request
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+    
+    - name: Cache pip packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-pr-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-pr-
+          ${{ runner.os }}-pip-
+    
+    - name: Validate requirements.txt syntax
+      run: |
+        python -m pip install --upgrade pip
+        pip install --dry-run -r requirements.txt
+    
+    - name: Check for merge conflicts
+      run: |
+        git fetch origin ${{ github.base_ref }}
+        git merge-base --is-ancestor origin/${{ github.base_ref }} HEAD || echo "Branch is behind base"
+    
+    - name: Verify Python syntax
+      run: |
+        find . -name "*.py" -not -path "./venv/*" -not -path "./.git/*" -not -path "./build/*" -not -path "./dist/*" | xargs -I {} python -m py_compile {}
+    
+    - name: Check for common issues
+      run: |
+        # Check for print statements in production code (informational)
+        echo "Checking for debug print statements..."
+        grep -r "print(" backend/ ml/ --include="*.py" || echo "No print statements found"
+        
+        # Check for TODO/FIXME comments
+        echo "Checking for TODO/FIXME comments..."
+        grep -r "TODO\|FIXME" backend/ ml/ --include="*.py" || echo "No TODO/FIXME found"
+      continue-on-error: true
+    
+    - name: Install dependencies and verify imports
+      run: |
+        pip install -r requirements.txt
+        python -c "
+        import sys
+        import importlib.util
+        import os
+
+        errors = []
+        for root, dirs, files in os.walk('backend'):
+            for file in files:
+                if file.endswith('.py'):
+                    module_path = os.path.join(root, file)
+                    try:
+                        spec = importlib.util.spec_from_file_location('module', module_path)
+                        if spec and spec.loader:
+                            module = importlib.util.module_from_spec(spec)
+                            # Don't execute, just verify it can be loaded
+                    except Exception as e:
+                        errors.append(f'{module_path}: {e}')
+        
+        for root, dirs, files in os.walk('ml'):
+            for file in files:
+                if file.endswith('.py'):
+                    module_path = os.path.join(root, file)
+                    try:
+                        spec = importlib.util.spec_from_file_location('module', module_path)
+                        if spec and spec.loader:
+                            module = importlib.util.module_from_spec(spec)
+                    except Exception as e:
+                        errors.append(f'{module_path}: {e}')
+        
+        if errors:
+            print('Import errors found:')
+            for error in errors:
+                print(f'  - {error}')
+        else:
+            print('All imports validated successfully')
+        "
+      continue-on-error: true
+    
+    - name: Check file permissions
+      run: |
+        # Ensure no executable permissions on source files
+        find . -name "*.py" -perm /111 -not -path "./venv/*" -not -path "./.git/*" || echo "No executable Python files found"

@@ -3,6 +3,8 @@
 [![Python Version](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Code Quality](https://img.shields.io/badge/code%20quality-optimized-brightgreen.svg)](https://github.com/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis)
+[![CI](https://github.com/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis/workflows/CI/badge.svg)](https://github.com/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis/branch/main/graph/badge.svg)](https://codecov.io/gh/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis)
 
 > **Professional real-time system monitoring and machine learning model analysis platform for High-Performance Computing (HPC) environments**
 
@@ -196,6 +198,56 @@ Real-time-system-metrics-and-ML-modal-analysis/
 - **Prophet**: Time series forecasting
 - **matplotlib**: Data visualization
 - **GPUtil**: GPU monitoring (optional)
+
+## CI/CD Pipeline
+
+This project uses GitHub Actions for continuous integration and continuous deployment. The CI/CD pipeline ensures code quality, runs tests, and performs security checks on every commit.
+
+### Workflows
+
+#### 1. **CI Workflow** (`.github/workflows/ci.yml`)
+Runs on every push and pull request to `main` and `develop` branches.
+
+**Jobs:**
+- **Lint and Code Quality**: Runs flake8, black, and pylint to ensure code quality
+- **Security Scanning**: Uses bandit and safety to detect security vulnerabilities
+- **Testing**: Runs pytest on Python 3.8, 3.9, 3.10, and 3.11
+- **Build Validation**: Verifies requirements.txt and imports
+
+#### 2. **Code Coverage** (`.github/workflows/coverage.yml`)
+Generates and uploads code coverage reports to Codecov.
+
+#### 3. **Dependency Check** (`.github/workflows/dependency-check.yml`)
+Runs weekly to check for outdated and vulnerable dependencies.
+
+#### 4. **PR Validation** (`.github/workflows/pr-validation.yml`)
+Validates pull requests for syntax errors, merge conflicts, and common issues.
+
+### Running Tests Locally
+
+```bash
+# Install test dependencies
+pip install pytest pytest-cov pytest-mock flake8 black pylint bandit
+
+# Run tests
+pytest tests/ -v
+
+# Run tests with coverage
+pytest tests/ --cov=backend --cov=ml --cov-report=html
+
+# Run linting
+flake8 backend/ ml/ --max-line-length=127
+
+# Check formatting
+black --check backend/ ml/ --line-length=120
+
+# Run security scan
+bandit -r backend/ ml/
+```
+
+### CI Status
+
+All workflows must pass before merging pull requests. Check the badges at the top of this README for current CI status.
 
 ## Contributing
 
