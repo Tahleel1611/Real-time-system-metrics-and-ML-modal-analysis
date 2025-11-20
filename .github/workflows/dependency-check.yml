@@ -6,6 +6,10 @@ on:
     - cron: '0 9 * * 1'
   workflow_dispatch:  # Allow manual triggers
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   dependency-check:
     name: Check Dependencies
