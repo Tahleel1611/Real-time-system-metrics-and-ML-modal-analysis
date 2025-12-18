@@ -24,6 +24,14 @@ In Machine Learning and High-Performance Computing environments, monitoring syst
 - **Trend Analysis**: Understand long-term patterns with seasonal decomposition
 - **Clustering Analysis**: Group similar system states for pattern recognition
 - **Interactive Visualizations**: Comprehensive charts and graphs for data interpretation
+- 
+### 🔔 Alert & Notification System
+
+- **Automated Alert Generation**: Real-time threshold monitoring for CPU, memory, and disk usage
+- **ML-Based Anomaly Alerts**: Triggered when anomalies are detected by ML models
+- **Configurable Thresholds**: Customize alert thresholds via API
+- **Alert History**: Track and review past alerts with severity levels (INFO, WARNING, CRITICAL)
+- **Alert Management API**: RESTful endpoints for alert retrieval, configuration, and clearing
 
 ### 📊 Historical Data Analysis
 - **Time-Travel Capability**: Navigate through historical system data
@@ -141,6 +149,33 @@ python ml/models/anomaly_detection.py
 **Monitor system in console:**
 ```bash
 python backend/app/models/processes.py
+```
+
+### Alert Management
+
+**Get all alerts:**
+```bash
+curl http://localhost:5000/api/alerts
+```
+
+**Get alert summary:**
+```bash
+curl http://localhost:5000/api/alerts/summary
+```
+
+**Manually check for alerts:**
+```bash
+curl -X POST http://localhost:5000/api/alerts/check
+```
+
+**Configure alert thresholds:**
+```bash
+curl -X POST -H "Content-Type: application/json" -d '{"cpu_percent": 80, "memory_percent": 85}' http://localhost:5000/api/alerts/thresholds
+```
+
+**Clear all alerts:**
+```bash
+curl -X POST http://localhost:5000/api/alerts/clear
 ```
 
 ## Configuration
