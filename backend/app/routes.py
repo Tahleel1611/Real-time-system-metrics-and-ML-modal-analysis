@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, jsonify, request, redirect, url_for
 from backend.app.models.system_metrics import get_system_metrics
+from backend.app.models.alert_system import alert_manager
 import datetime
 import random
 import pandas as pd
@@ -61,6 +62,10 @@ def get_metrics():
         "data_out": network_out,
         "anomaly_scores": anomaly_scores
     }
+
+        
+    # Check for alerts
+    alert_manager.check_metrics(metrics)
     
     # Save the current metrics to a CSV file for ML analysis
     save_metrics_to_csv(metrics)
@@ -128,3 +133,44 @@ def upload():
             file.save(file_path)
             return redirect(url_for('main.dashboard'))
     return render_template('upload.html')
+
+# Alert System Routes
+@main.route('/api/alerts')
+def get_alerts():
+    """Get all recent alerts"""
+    severity = request.args.get('severity', None)
+    limit = int(request.args.get('limit', 50))
+    alerts = alert_manager.get_alerts(severity=severity, limit=limit)
+    return jsonify(alerts)
+
+@main.route('/api/alerts/summary')
+def get_alerts_summary():
+    """Get alert summary statistics"""
+    summary = alert_manager.get_alert_summary()
+    return jsonify(summary)
+
+@main.route('/api/alerts/check', methods=['POST'])
+def check_alerts():
+    """Manually trigger alert check on current metrics"""
+    metrics = get_system_metrics()
+    new_alerts = alert_manager.check_metrics(metrics)
+    return jsonify({
+        'alerts_generated': len(new_alerts),
+        'alerts': [alert.to_dict() for alert in new_alerts]
+    })
+
+@main.route('/api/alerts/clear', methods=['POST'])
+def clear_alerts():
+    """Clear all alerts"""
+    alert_manager.clear_alerts()
+    return jsonify({'message': 'All alerts cleared'})
+
+@main.route('/api/alerts/thresholds', methods=['GET', 'POST'])
+def manage_thresholds():
+    """Get or update alert thresholds"""
+    if request.method == 'POST':
+        data = request.get_json()
+        for metric, value in data.items():
+            alert_manager.set_threshold(metric, float(value))
+        return jsonify({'message': 'Thresholds updated', 'thresholds': alert_manager.thresholds})
+    return jsonify(alert_manager.thresholds)
