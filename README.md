@@ -80,7 +80,43 @@ Here's a preview of the platform:
 
 ## Installation
 
+### Option 1: Docker Deployment (Recommended for Production)
+
+The fastest way to get started is using Docker:
+
+```bash
+# Clone the repository
+git clone https://github.com/Tahleel1611/Real-time-system-metrics-and-ML-modal-analysis.git
+cd Real-time-system-metrics-and-ML-modal-analysis
+
+# Start with Docker Compose
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the service
+docker-compose down
+```
+
+The application will be available at `http://localhost:5000`
+
+**Docker Deployment Benefits:**
+- ✅ One-command deployment
+- ✅ Isolated environment
+- ✅ Production-ready with health checks
+- ✅ Easy scaling and management
+- ✅ No dependency conflicts
+
+### Option 2: Manual Installation
+
 ### Prerequisites
+
+**For Docker Deployment:**
+- Docker 20.10 or higher
+- Docker Compose 1.29 or higher
+
+**For Manual Installation:**
 - Python 3.8 or higher
 - pip package manager
 - Virtual environment (recommended)
