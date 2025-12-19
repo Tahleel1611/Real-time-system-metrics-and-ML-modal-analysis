@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  hpc-monitor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hpc-system-monitor
+    ports:
+      - "5000:5000"
+    volumes:
+      # Persistent data
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./reports:/app/reports
+      # Mount host system info for monitoring (read-only)
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    environment:
+      - FLASK_ENV=production
+      - FLASK_APP=backend/app/app.py
+      - HOST_PROC_PATH=/host/proc
+      - HOST_SYS_PATH=/host/sys
+    restart: unless-stopped
+    # Resource limits for the container itself
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+    networks:
+      - hpc-monitoring
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  hpc-monitoring:
+    driver: bridge
+
+volumes:
+  data:
+  logs:
+  uploads:
+  reports:
